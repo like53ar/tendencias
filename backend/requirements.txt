@@ -1,0 +1,9 @@
+flask
+flask-cors
+ccxt
+pandas
+numpy
+scikit-learn
+statsmodels
+ta-lib-python; sys_platform == 'linux'
+pandas-ta

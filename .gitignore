@@ -1,0 +1,23 @@
+# ── Python ──────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyc
+.venv/
+venv/
+env/
+*.egg-info/
+
+# ── Node / Angular ──────────────────────────
+node_modules/
+dist/
+.angular/
+
+# ── OS / IDE ────────────────────────────────
+.DS_Store
+Thumbs.db
+.vscode/
+*.lnk
+
+# ── Logs & temp ─────────────────────────────
+*.log
+npm-debug.log*
