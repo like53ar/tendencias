@@ -16,12 +16,13 @@ crypto_service = CryptoService()
 
 # ── Watchdog: apaga el servidor si el browser se cierra ──────
 _last_ping = time.time()
-_PING_TIMEOUT = 25  # segundos sin ping → apagar
+_PING_TIMEOUT = 30      # segundos sin ping → apagar
+_browser_connected = False  # solo apaga si el browser llegó a conectarse
 
 def _watchdog():
     while True:
         time.sleep(5)
-        if time.time() - _last_ping > _PING_TIMEOUT:
+        if _browser_connected and (time.time() - _last_ping > _PING_TIMEOUT):
             print('[ZenCrypto] Browser desconectado — apagando servidor.')
             os._exit(0)
 
@@ -135,8 +136,9 @@ def get_ticker():
 @app.route('/api/keepalive', methods=['GET'])
 def keepalive():
     """El frontend hace ping cada 10s. Si deja de llegar, el watchdog apaga el servidor."""
-    global _last_ping
+    global _last_ping, _browser_connected
     _last_ping = time.time()
+    _browser_connected = True
     return jsonify({'ok': True})
 
 @app.route('/api/search', methods=['GET'])
