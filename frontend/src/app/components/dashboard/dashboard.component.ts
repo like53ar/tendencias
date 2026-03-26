@@ -53,15 +53,16 @@ import { CryptoApiService } from '../../services/crypto-api.service';
           </div>
         </main>
         
-        <app-prediction-panel
-            [currentPrice]="currentPrice"
-            [priceChange]="priceChange"
-            [trend]="trendText"
-            [supports]="supports"
-            [resistances]="resistances"
-            [minProjection]="minProjection"
-            [maxProjection]="maxProjection"
-        ></app-prediction-panel>
+          <app-prediction-panel
+              [currentPrice]="currentPrice"
+              [priceChange]="priceChange"
+              [trend]="trendText"
+              [supports]="supports"
+              [resistances]="resistances"
+              [minProjection]="minProjection"
+              [maxProjection]="maxProjection"
+              [lastRsi]="lastRsi"
+          ></app-prediction-panel>
       </div>
     </div>
   `,
@@ -159,6 +160,7 @@ export class DashboardComponent implements OnInit {
   resistances: number[] = [];
   minProjection = 0;
   maxProjection = 0;
+  lastRsi = 50;
 
   constructor(private api: CryptoApiService) {}
 
@@ -195,7 +197,9 @@ export class DashboardComponent implements OnInit {
       this.supports = res.levels.supports;
       this.resistances = res.levels.resistances;
       
-      const lastRsi = this.rsiData[this.rsiData.length - 1].value;
+      const lastRsiObj = this.rsiData[this.rsiData.length - 1];
+      this.lastRsi = lastRsiObj ? lastRsiObj.value : 50;
+
       const lastSma20 = this.sma20Data[this.sma20Data.length - 1].value;
       const lastSma200 = this.sma200Data[this.sma200Data.length - 1].value;
 

@@ -1,7 +1,6 @@
 import ccxt
 import pandas as pd
 import numpy as np
-from sklearn.linear_model import LinearRegression
 
 class CryptoService:
     def __init__(self):
@@ -68,7 +67,8 @@ class CryptoService:
             return []
 
     def project_linear_regression(self, df, periods_to_predict=24):
-        # Using linear regression to project future price
+        # Lazy import to avoid loading scikit-learn at server startup
+        from sklearn.linear_model import LinearRegression
         df = df.dropna(subset=['close'])
         x = np.array(range(len(df))).reshape(-1, 1)
         y = df['close'].values.reshape(-1, 1)

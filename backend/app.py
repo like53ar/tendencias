@@ -1,11 +1,14 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 from services.crypto_service import CryptoService
 import os
 import pandas as pd
 
-app = Flask(__name__)
-CORS(app)  # Allow Angular to talk to Flask
+# Serve Angular static build
+FRONTEND_DIST = os.path.join(os.path.dirname(__file__), '..', 'frontend', 'dist', 'frontend', 'browser')
+
+app = Flask(__name__, static_folder=FRONTEND_DIST, static_url_path='')
+CORS(app)
 
 crypto_service = CryptoService()
 
@@ -128,6 +131,14 @@ def search_symbols():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+# ── Catch-all: serve Angular app for any non-API route ──────────
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def serve_angular(path):
+    if path and os.path.exists(os.path.join(app.static_folder, path)):
+        return send_from_directory(app.static_folder, path)
+    return send_from_directory(app.static_folder, 'index.html')
+
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
-    app.run(debug=True, host='0.0.0.0', port=port)
+    app.run(debug=False, threaded=True, host='0.0.0.0', port=port)
