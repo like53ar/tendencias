@@ -10,7 +10,7 @@ $SplashUrl   = "file:///$($BasePath.Replace('\','/'))/zen_splash.html"
 
 # ── 1. MATAR INSTANCIAS PREVIAS ──────────────────────────────
 
-foreach ($port in @(5000)) {
+foreach ($port in @(8765)) {
     $pids = (Get-NetTCPConnection -LocalPort $port -State Listen -ErrorAction SilentlyContinue).OwningProcess
     foreach ($p in $pids) {
         Stop-Process -Id $p -Force -ErrorAction SilentlyContinue
@@ -36,7 +36,7 @@ $waited  = 0
 $ready   = $false
 while ($waited -lt $maxWait) {
     try {
-        $null = Invoke-WebRequest -Uri "http://localhost:5000/api/ticker" -TimeoutSec 1 -ErrorAction Stop
+        $null = Invoke-WebRequest -Uri "http://localhost:8765/api/ticker" -TimeoutSec 1 -ErrorAction Stop
         $ready = $true
         break
     } catch {
@@ -51,8 +51,8 @@ if ($splashProc -and !$splashProc.HasExited) {
 }
 
 if ($ready) {
-    Start-Process "http://localhost:5000"
+    Start-Process "http://localhost:8765"
 } else {
     # Si tardó más de lo esperado, abrir igual
-    Start-Process "http://localhost:5000"
+    Start-Process "http://localhost:8765"
 }

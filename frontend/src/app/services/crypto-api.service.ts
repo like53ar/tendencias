@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class CryptoApiService {
-  private apiUrl = 'http://localhost:5000/api';
+  private apiUrl = 'http://localhost:8765/api';
 
   constructor(private http: HttpClient) { }
 
