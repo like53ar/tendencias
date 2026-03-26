@@ -2,6 +2,8 @@ from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 from services.crypto_service import CryptoService
 import os
+import time
+import threading
 import pandas as pd
 
 # Serve Angular static build
@@ -11,6 +13,19 @@ app = Flask(__name__, static_folder=FRONTEND_DIST, static_url_path='')
 CORS(app)
 
 crypto_service = CryptoService()
+
+# ── Watchdog: apaga el servidor si el browser se cierra ──────
+_last_ping = time.time()
+_PING_TIMEOUT = 25  # segundos sin ping → apagar
+
+def _watchdog():
+    while True:
+        time.sleep(5)
+        if time.time() - _last_ping > _PING_TIMEOUT:
+            print('[ZenCrypto] Browser desconectado — apagando servidor.')
+            os._exit(0)
+
+threading.Thread(target=_watchdog, daemon=True).start()
 
 # Popular symbols for the live ticker
 TICKER_SYMBOLS = [
@@ -116,6 +131,13 @@ def get_ticker():
         return jsonify({'tickers': tickers})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+@app.route('/api/keepalive', methods=['GET'])
+def keepalive():
+    """El frontend hace ping cada 10s. Si deja de llegar, el watchdog apaga el servidor."""
+    global _last_ping
+    _last_ping = time.time()
+    return jsonify({'ok': True})
 
 @app.route('/api/search', methods=['GET'])
 def search_symbols():

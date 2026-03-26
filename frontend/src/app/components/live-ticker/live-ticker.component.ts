@@ -129,7 +129,7 @@ export class LiveTickerComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.sub = interval(30000).pipe(
       startWith(0),
-      switchMap(() => this.http.get<{ tickers: TickerItem[] }>('http://localhost:5000/api/ticker'))
+      switchMap(() => this.http.get<{ tickers: TickerItem[] }>('http://localhost:8765/api/ticker'))
     ).subscribe({
       next: res => {
         this.tickers = res.tickers;
